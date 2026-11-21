@@ -14,6 +14,7 @@ Pkg.add("BIOMFormat")
 
 ```julia
 using BIOMFormat
+using BIOMFormat: counts, samples, taxonomy
 
 t = read_biom("feature-table.biom")    # either version; the format is read from the file
 counts(t)                              # observations × samples, a sparse matrix

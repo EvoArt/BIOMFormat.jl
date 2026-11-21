@@ -23,10 +23,13 @@ using Printf: @sprintf
 import HDF5
 import JSON
 import Tables
+import DataAPI: metadata    # extend DataAPI's (and DataFrames') metadata, so they don't clash
 
 export BIOMTable, read_biom, write_biom
-export counts, observations, samples, metadata, observation_metadata, sample_metadata
-export taxonomy, group_metadata
+export observations, metadata, observation_metadata, sample_metadata, group_metadata
+# `counts`, `samples` and `taxonomy` are not exported: CommunityEcology and other
+# packages export different functions with these names. Use
+# `using BIOMFormat: counts, samples, taxonomy`, or qualify them (`BIOMFormat.counts(t)`).
 
 include("style.jl")
 include("table.jl")

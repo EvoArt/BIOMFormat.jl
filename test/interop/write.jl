@@ -1,6 +1,7 @@
 # Writes tables for the reference implementation to read (interop.py).
 #   julia --project=. test/interop/write.jl <outdir>
 using BIOMFormat
+using BIOMFormat: counts, samples, taxonomy
 out = ARGS[1]
 fx(name) = joinpath(@__DIR__, "..", "fixtures", name)
 t = read_biom(fx("rich_sparse_otu_table.biom"))

@@ -4,6 +4,7 @@
 module BIOMFormatDenoiseDNAExt
 
 using BIOMFormat
+using BIOMFormat: counts, samples, taxonomy
 using DenoiseDNA
 using SparseArrays
 

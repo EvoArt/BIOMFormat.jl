@@ -2,6 +2,7 @@
 # with BIOMFormat's own reading of the original JSON fixture.
 #   julia --project=. test/interop/read.jl <outdir>
 using BIOMFormat
+using BIOMFormat: counts, samples, taxonomy
 fx(name) = joinpath(@__DIR__, "..", "fixtures", name)
 ref = read_biom(fx("rich_sparse_otu_table.biom"))
 p = read_biom(joinpath(ARGS[1], "rich_from_python_hdf5.biom"))

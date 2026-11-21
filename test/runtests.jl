@@ -1,4 +1,5 @@
 using BIOMFormat
+using BIOMFormat: counts, samples, taxonomy
 using SparseArrays
 using Tables
 using Test
