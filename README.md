@@ -1,6 +1,7 @@
 # BIOMFormat.jl
 
 [![CI](https://github.com/EvoArt/BIOMFormat.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/EvoArt/BIOMFormat.jl/actions/workflows/CI.yml)
+[![Coverage](https://codecov.io/gh/EvoArt/BIOMFormat.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/EvoArt/BIOMFormat.jl)
 
 Read and write [BIOM](https://biom-format.org) tables, the Biological
 Observation Matrix format used by QIIME 2, QIIME, phyloseq and most other
