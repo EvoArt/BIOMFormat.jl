@@ -63,14 +63,6 @@ _key(io, k) = _sty(io, "  " * rpad(k, _KEY_W); color=_PAL.key)
 _kv(io, k, v) = println(io, _key(io, k), v)
 _note(io, s) = _sty(io, s; color=_PAL.key)
 
-# ✓/✗ check items on one line
-function _checks(io, items)
-    isempty(items) && return
-    sep = _sty(io, "  ·  "; color=_PAL.rule)
-    println(io, "  ", join((ok ? _sty(io, "✓ "; color=_PAL.good) * s : _sty(io, "✗ " * s; color=_PAL.warn, bold=true)
-                            for (ok, s) in items), sep))
-end
-
 # a nucleotide sequence in colour, shortened to `w` characters around a
 # middle ellipsis (head and tail are where amplicons differ from each other
 # least and most, respectively, so both are kept)
@@ -96,49 +88,6 @@ function _bases(io, s::AbstractString)
     print(b, "\e[0m")
     return String(take!(b))
 end
-
-const _SPARK = ('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█')
-
-# one glyph per value of `v` on the scale `lo..hi`; `color(k, x)` picks each
-# glyph's colour (runs of one colour are written as one escape sequence)
-function _spark(io, v::AbstractVector{<:Real}, lo::Real, hi::Real; color=(k, x) -> _PAL.spark)
-    b = IOBuffer()
-    prev = -1
-    for (k, x) in enumerate(v)
-        if isnan(x)
-            g, c = ' ', 0
-        else
-            f = hi > lo ? clamp((x - lo) / (hi - lo), 0, 1) : 0.5
-            g, c = _SPARK[1+round(Int, 7f)], color(k, x)
-        end
-        if _hascolor(io) && c != prev
-            print(b, c == 0 ? "\e[0m" : "\e[38;5;$(c)m")
-            prev = c
-        end
-        print(b, g)
-    end
-    _hascolor(io) && prev != -1 && print(b, "\e[0m")
-    return String(take!(b))
-end
-
-# average `v` into at most `w` bins (NaNs ignored)
-function _bin(v::AbstractVector{<:Real}, w::Int)
-    n = length(v)
-    n <= w && return collect(Float64, v)
-    out = fill(NaN, w)
-    for k in 1:w
-        lo = div((k - 1) * n, w) + 1
-        hi = div(k * n, w)
-        s = 0.0; c = 0
-        for i in lo:hi
-            isnan(v[i]) && continue
-            s += v[i]; c += 1
-        end
-        c > 0 && (out[k] = s / c)
-    end
-    return out
-end
-
 
 # a plain table: header in dim, columns right-aligned unless `align[j] == :l`
 function _table(io, header::AbstractVector{<:AbstractString}, rows::AbstractVector{<:AbstractVector{<:AbstractString}};

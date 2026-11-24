@@ -74,6 +74,22 @@ end
     @test counts(g) == counts(f)
     @test sample_metadata(g, "depth") == [10.0, 2.5]
     @test_throws ArgumentError write_biom(joinpath(dir, "x.biom"), f; format = :csv)
+    # taxonomies of different depths are padded in HDF5 and trimmed on reading
+    tax = BIOMTable([1 2; 3 4], ["o1", "o2"], ["s1", "s2"];
+                    observation_metadata = [Dict("taxonomy" => ["k__Bacteria", "p__Firmicutes", "g__Bacillus"]),
+                                            Dict("taxonomy" => ["k__Bacteria"])])
+    back = read_biom(write_biom(joinpath(dir, "tax.biom"), tax))
+    @test observation_metadata(back, "taxonomy") == [["k__Bacteria", "p__Firmicutes", "g__Bacillus"], ["k__Bacteria"]]
+    # BIOM 1.0 with a dense matrix, and an unknown matrix type
+    dense = """{"id": null, "format": "Biological Observation Matrix 1.0.0", "type": "OTU table",
+        "generated_by": "test", "date": "2026-01-01T00:00:00",
+        "rows": [{"id": "o1", "metadata": null}, {"id": "o2", "metadata": null}],
+        "columns": [{"id": "s1", "metadata": null}, {"id": "s2", "metadata": null}],
+        "matrix_type": "dense", "matrix_element_type": "int", "shape": [2, 2], "data": [[1, 0], [2, 3]]}"""
+    write(joinpath(dir, "dense.biom"), dense)
+    @test counts(read_biom(joinpath(dir, "dense.biom"))) == [1 0; 2 3]
+    write(joinpath(dir, "odd.biom"), replace(dense, "\"dense\"" => "\"triangular\""))
+    @test_throws ArgumentError read_biom(joinpath(dir, "odd.biom"))
 end
 
 @testset "construction, subsetting, Tables" begin
@@ -135,6 +151,12 @@ end
     @test occursin("2 samples × 0 observations", sprint(show, MIME"text/plain"(), empty))
     st = DenoiseDNA.SequenceTable(["s1"], ["ACGT"^10], fill(5, 1, 1))
     @test occursin("ACGT", sprint(show, MIME"text/plain"(), BIOMTable(st)))
+    # long sequence ids shortened and coloured base by base
+    long = DenoiseDNA.SequenceTable(["s1"], ["ACGTN"^30], fill(5, 1, 1))
+    s = sprint(show, MIME"text/plain"(), BIOMTable(long); context = (:color => true, :displaysize => (24, 60)))
+    @test occursin("…", s) && occursin("\e[38;5;114mA", s)
+    # a table of non-integer values reports its total
+    @test occursin("total", sprint(show, MIME"text/plain"(), BIOMTable([0.5 1.25; 2.0 0.0], ["a", "b"], ["s1", "s2"])))
 end
 
 end
