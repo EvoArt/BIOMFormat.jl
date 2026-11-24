@@ -1,5 +1,6 @@
 # BIOMFormat.jl
 
+[![Docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://EvoArt.github.io/BIOMFormat.jl/dev/)
 [![CI](https://github.com/EvoArt/BIOMFormat.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/EvoArt/BIOMFormat.jl/actions/workflows/CI.yml)
 [![Coverage](https://codecov.io/gh/EvoArt/BIOMFormat.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/EvoArt/BIOMFormat.jl)
 
